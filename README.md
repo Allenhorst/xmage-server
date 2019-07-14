@@ -1,6 +1,6 @@
 # XMage Server based on Alpine & OpenJDK
 
-[![](https://images.microbadger.com/badges/image/nealmetcalf/docker-xmage.svg)](https://microbadger.com/images/nealmetcalf/docker-xmage) [![](https://images.microbadger.com/badges/version/nealmetcalf/docker-xmage.svg)](https://microbadger.com/images/nealmetcalf/docker-xmage)
+[![](https://images.microbadger.com/badges/image/thesharp/xmage-server.svg)](https://microbadger.com/images/thesharp/xmage-server) [![](https://images.microbadger.com/badges/version/thesharp/xmage-server.svg)](https://microbadger.com/images/thesharp/xmage-server)
 
 ## Usage
 ```
@@ -11,12 +11,12 @@ docker run -d -it \
 	--add-host example.com:0.0.0.0 \
 	-e "XMAGE_DOCKER_SERVER_ADDRESS=example.com" \
 	--restart unless-stopped \
-	nealmetcalf/docker-xmage
+	thesharp/xmage-server
 ```
 
-XMage needs to know the domain name the server is running on. The `--add-host` option adds an entry to the containers `/etc/hosts` file for this domain. Replace `example.com` with your server IP address or domain name address.  
-Using the `XMAGE_*` environment variables you can modify the `config.xml` file.  
-You should always set `XMAGE_DOCKER_SERVER_ADDRESS` to the same value as your `--add-host` flag value.  
+XMage needs to know the domain name the server is running on. The `--add-host` option adds an entry to the containers `/etc/hosts` file for this domain. Replace `example.com` with your server IP address or domain name address.
+Using the `XMAGE_*` environment variables you can modify the `config.xml` file.
+You should always set `XMAGE_DOCKER_SERVER_ADDRESS` to the same value as your `--add-host` flag value.
 
 ---
 
@@ -53,7 +53,7 @@ Add `--mount source=xmage-db,target=/xmage/mage-server/db` to your `docker run` 
 version: '2'
 services:
 mage:
-	image: nealmetcalf/docker-xmage
+	image: thesharp/xmage-server
 	ports:
 	 - "17171:17171"
 	 - "17179:17179"
@@ -69,4 +69,10 @@ mage:
 volumes:
 	xmage-db:
 		driver: local
+```
+
+## Local run example
+
+```bash
+docker run -it -p 17171:17171 -p 17179:17179 -e "XMAGE_DOCKER_SERVER_ADDRESS=mtg.thesharp.org" -e "XMAGE_DOCKER_MAILGUN_API_KEY=<hidden>" -e "XMAGE_DOCKER_MAILGUN_DOMAIN=thesharp.org" -e "XMAGE_DOCKER_AUTHENTICATION_ACTIVATED=true" -e "XMAGE_DOCKER_SERVER_NAME=mtg.thesharp.org" --add-host mtg.thesharp.org:0.0.0.0 --mount source=xmage-db,target=/xmage/mage-server/db thesharp/xmage-server:latest
 ```
