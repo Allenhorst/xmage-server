@@ -26,22 +26,23 @@ ENV JAVA_MIN_MEMORY=256M \
 
 #RUN based on anapsix/docker-alpine-java:8u172b11_server-jre
 RUN set -ex && \
-    apk -U upgrade && \
-    apk add libstdc++ curl ca-certificates bash jq && \
+    apk -U --no-cache upgrade && \
+    apk --no-cache add --virtual dl-deps curl jq && \
+    apk --no-cache add libstdc++ ca-certificates bash && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL ${GLIBC_REPO}/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
     apk add --allow-untrusted /tmp/*.apk && \
     rm -v /tmp/*.apk && \
     ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) && \
     echo "export LANG=C.UTF-8" > /etc/profile.d/locale.sh && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
- 
-#Following code based on Dockerfile from goesta/docker-xmage-alpine 
+
+#Following code based on Dockerfile from goesta/docker-xmage-alpine
 WORKDIR /xmage
 
 RUN curl --silent --show-error http://xmage.de/xmage/config.json | jq '.XMage.location' | xargs curl -# -L > xmage.zip \
  && unzip xmage.zip -x "mage-client*" \
  && rm xmage.zip \
- && apk del curl jq
+ && apk del dl-deps
 
 COPY dockerStartServer.sh /xmage/mage-server/
 
